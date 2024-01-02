@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"rest-api/helpers"
+	"rest-api/helpers/env"
 	"rest-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -22,7 +22,7 @@ func InitDB() {
 
 // MigrateDB migrates the database schema.
 func MigrateDB() {
-	stage := helpers.GetAsString("STAGE", "development")
+	stage := env.GetAsString("STAGE", "development")
 
 	if stage == "development" || stage == "production" {
 		db.Debug().AutoMigrate(&models.User{}, &models.Photo{})
@@ -36,7 +36,7 @@ func GetDB() *gorm.DB {
 
 func loadEnvironment() {
 	var path string
-	stage := helpers.GetAsString("STAGE", "development")
+	stage := env.GetAsString("STAGE", "development")
 
 	if stage == "testing" {
 		path = ".env.testing"
@@ -45,7 +45,7 @@ func loadEnvironment() {
 		path = ".env"
 	}
 
-	helpers.LoadEnv(path)
+	env.LoadEnv(path)
 }
 
 func setupDatabase() {
@@ -61,10 +61,10 @@ func setupDatabase() {
 func getDatabaseURI() string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=disable",
-		helpers.GetAsString("DB_USER", "postgres"),
-		helpers.GetAsString("DB_PASSWORD", "mysecretpassword"),
-		helpers.GetAsString("DB_HOST", "localhost"),
-		helpers.GetAsInt("DB_PORT", 5432),
-		helpers.GetAsString("DB_NAME", "postgres"),
+		env.GetAsString("DB_USER", "postgres"),
+		env.GetAsString("DB_PASSWORD", "mysecretpassword"),
+		env.GetAsString("DB_HOST", "localhost"),
+		env.GetAsInt("DB_PORT", 5432),
+		env.GetAsString("DB_NAME", "postgres"),
 	)
 }

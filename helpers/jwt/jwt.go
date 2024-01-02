@@ -1,13 +1,14 @@
-package helpers
+package jwt
 
 import (
 	"errors"
 
+	"rest-api/helpers/env"
 	"github.com/dgrijalva/jwt-go"
 )
 
 // SecretKey merupakan kunci rahasia untuk penandatanganan token JWT.
-var SecretKey = []byte(GetAsString("STAGE", "kuncirahasia"))
+var SecretKey = []byte(env.GetAsString("STAGE", "kuncirahasia"))
 
 // GenerateToken digunakan untuk membuat token JWT.
 func GenerateToken(userID int) (string, error) {

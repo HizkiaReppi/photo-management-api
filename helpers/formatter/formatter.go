@@ -1,4 +1,4 @@
-package helpers
+package formatter
 
 import (
 	"github.com/asaskevich/govalidator"

@@ -1,23 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
+	"github.com/gin-gonic/gin"
 
 	"rest-api/databases"
+	"rest-api/routers"
 )
-
-func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, World!")
-}
 
 func main() {
 	// Initialize and migrate the database.
 	initializeDatabase()
 
-	http.HandleFunc("/", helloWorldHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Initialize and run the router.
+	initializeRouter().Run(":8080")
 }
 
 func initializeDatabase() {
@@ -26,4 +21,9 @@ func initializeDatabase() {
 
 	// Migrate the database.
 	database.MigrateDB()
+}
+
+func initializeRouter() *gin.Engine {
+	// Initialize the router.
+	return routers.RouteInit()
 }
