@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	UserResponse "rest-api/app"
+	UserResponse "rest-api/app/UserResponse"
 	"rest-api/helpers/formatter"
 	"rest-api/helpers/bcrypt"
 	"rest-api/helpers/jwt"
