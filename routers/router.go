@@ -24,6 +24,8 @@ func RouteInit() *gin.Engine {
 	{
 		userRoute.POST("/register", userController.Register)
 		userRoute.POST("/login", userController.Login)
+		userRoute.PUT("/:userId", userController.Update)
+		userRoute.DELETE("/:userId", userController.Delete)
 	}
 
 	return route

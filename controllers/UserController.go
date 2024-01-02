@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	UserResponse "rest-api/app"
@@ -91,6 +92,48 @@ func (h *userController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *userController) Update(c *gin.Context) {
+	var oldUser UserModel.User
+	var newUser UserModel.User
+
+	id := c.Param("userId")
+
+	if err := h.db.First(&oldUser, id).Error; err != nil {
+		handleUpdateError(c, err)
+		return
+	}
+
+	if err := json.NewDecoder(c.Request.Body).Decode(&newUser); err != nil {
+		handleUpdateError(c, err)
+		return
+	}
+
+	if err := h.db.Model(&oldUser).Updates(newUser).Error; err != nil {
+		handleUpdateError(c, err)
+		return
+	}
+
+	response := formatter.ApiResponse(http.StatusOK, "success", nil, "User Updated Successfully")
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *userController) Delete(c *gin.Context) {
+	var user UserModel.User
+
+	id := c.Param("userId")
+	if err := h.db.First(&user, id).Error; err != nil {
+		handleDeleteError(c, err)
+		return
+	}
+
+	if err := h.db.Delete(&user).Error; err != nil {
+		handleDeleteError(c, err)
+		return
+	}
+
+	response := formatter.ApiResponse(http.StatusOK, "success", nil, "User Deleted Successfully")
+	c.JSON(http.StatusOK, response)
+}
 
 func handleRegistrationError(c *gin.Context, err error) {
 	errors := formatter.FormatValidationError(err)
@@ -101,5 +144,17 @@ func handleRegistrationError(c *gin.Context, err error) {
 
 func handleLoginError(c *gin.Context, message string) {
 	response := formatter.ApiResponse(http.StatusUnprocessableEntity, "error", nil, message)
+	c.JSON(http.StatusUnprocessableEntity, response)
+}
+
+func handleUpdateError(c *gin.Context, err error) {
+	errors := formatter.FormatValidationError(err)
+	errorMessage := gin.H{"errors": errors}
+	response := formatter.ApiResponse(http.StatusUnprocessableEntity, "error", errorMessage, err.Error())
+	c.JSON(http.StatusUnprocessableEntity, response)
+}
+
+func handleDeleteError(c *gin.Context, err error) {
+	response := formatter.ApiResponse(http.StatusUnprocessableEntity, "error", nil, err.Error())
 	c.JSON(http.StatusUnprocessableEntity, response)
 }
